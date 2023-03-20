@@ -32,6 +32,7 @@ function App() {
     matches[index][score] = Math.max(value, 0);
     setMatches([...matches]);
   }
+  
   useEffect(() => {
     const newStanding: standing[] = [];
     matches.forEach(({ team1, team2, score1, score2 }) => {
@@ -44,10 +45,28 @@ function App() {
     setStanding(newStanding.sort((a, b) => b.points - a.points));
   }, [matches, standing]);
 
-  useEffect(() => {
-    setStanding(standing.map((x)=> x));
-  }, [...standing]);
+  const generateRandomMatches = () => {
+    const teams = ["Juventus", "Roma", "Inter", "Sassuolo", "Milan", "Genova"];
+    const newMatches = [];
+    for (let i = 0; i < 3; i++) {
+      const team1 = teams[Math.floor(Math.random() * teams.length)];
+      let team2 = teams[Math.floor(Math.random() * teams.length)];
+      while (team2 === team1) {
+        team2 = teams[Math.floor(Math.random() * teams.length)];
+      }
+      const score1 = Math.floor(Math.random() * 6);
+      const score2 = Math.floor(Math.random() * 6);
+      newMatches.push({ team1, score1, team2, score2 });
+    }
+    setMatches(newMatches);
+  }
+  
+  const handleNewDayClick = () => {
+    generateRandomMatches();
+    setCount(count => count + 1);
+  };
 
+  const [count, setCount] = useState(0)
   return (
     <div className="App">
       <div className ="title">
@@ -57,7 +76,8 @@ function App() {
         {standing.map(item => <li className="standing">{item.team} → {item.points}</li>)}
       </ul>
       <div className ="title">
-        <h1 className ="score">MATCH</h1>
+        <h1 className ="score">MATCH (GIORNATA: {count})</h1>
+        <button type="button" className="button-day" onClick={handleNewDayClick}>New day</button>
       </div>
       <ul>
         {matches.map(item => <li className="standing">{item.team1} : {item.team2} = {item.score1} : {item.score2}</li>)}
